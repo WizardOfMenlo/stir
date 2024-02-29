@@ -1,5 +1,4 @@
-from math import ceil, log2, floor
-from iop import IOPNonOracleMessage, IOPOracleMessage
+from math import ceil, log2 
 from ldt_params import LDTParameters
 
 from protocol import Protocol, Polynomial, NonOracleMessage, Round
@@ -15,9 +14,6 @@ def stir_round(params : LDTParameters, oracle : Polynomial, fold, max_len_ratio,
     # init round 
     rnd = Round()
 
-    rate_bits = oracle.rate_bits()
-
-    
     # virtual folding
     oracle.fold(fold)
     # get new degree

@@ -1,4 +1,3 @@
-from math import ceil
 from ldt_params import LDTParameters
 from protocol import Protocol, Polynomial, NonOracleMessage, Round
 

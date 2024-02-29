@@ -1,9 +1,6 @@
 from ldt_params import LDTParameters
 from fri import run_FRI
 from stir import stir_round, run_STIR
-from math import log2
-from utils import convert_size
-from protocol import Protocol, Round, Polynomial, NonOracleMessage
 from aurora import run_aurora_FRI, run_aurora_STIR
 
 def plot_table_values():

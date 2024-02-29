@@ -1,6 +1,5 @@
 from ldt_params import LDTParameters
 from math import log2
-from arg import ROMParameters
 
 from utils import convert_size
 import math
