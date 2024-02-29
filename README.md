@@ -10,4 +10,4 @@ By [Gal Arnon](https://www.wisdom.weizmann.ac.il/~galar/) [Alessandro Chiesa](ht
 
 Find also an explanatory [blog post](https://gfenzi.io/papers/stir).
 
-**WARNING:** This is an academic prototype and has not received careful code review. This implementation is NOT ready for production use
+**WARNING:** This is an academic prototype and has not received careful code review. This implementation is NOT ready for production use.
