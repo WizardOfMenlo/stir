@@ -8,6 +8,6 @@
 This library was developed using the [arkworks](https://arkworks.rs) ecosystem to accompany [STIR 🥣: Reed–Solomon Proximity Testing with Fewer Queries](https://eprint.iacr.org/2024/XXX) (Available soon). 
 By [Gal Arnon](https://www.wisdom.weizmann.ac.il/~galar/) [Alessandro Chiesa](https://ic-people.epfl.ch/~achiesa/), [Giacomo Fenzi](https://gfenzi.io), and [Eylon Yogev](https://www.eylonyogev.com/about).
 
-Find also an explanatory [blog post](gfenzi.io/papers/stir)
+Find also an explanatory [blog post](https://gfenzi.io/papers/stir)
 
 **WARNING:** This is an academic prototype and has not received careful code review. This implementation is NOT ready for production use
