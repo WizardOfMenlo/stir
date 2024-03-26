@@ -77,6 +77,7 @@ mod tests {
 
     use super::*;
     use crate::crypto::fields::Field64 as TestField;
+    use ark_ff::AdditiveGroup;
 
     fn test_bivariate(
         poly: &DensePolynomial<TestField>,
