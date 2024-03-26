@@ -35,7 +35,7 @@ parallel = ["rayon", "ark-ff/parallel", "ark-crypto-primitives/parallel"]
 
 [patch.crates-io]
 ark-std = { git = "https://github.com/arkworks-rs/std" }
-ark-crypto-primitives = { git = "https://github.com/intx4/crypto-primitives" }
+ark-crypto-primitives = { git = "https://github.com/arkworks-rs/crypto-primitives" }
 ark-test-curves = {  git = "https://github.com/arkworks-rs/algebra" }
 ark-ff = { git = "https://github.com/arkworks-rs/algebra" }
 ark-poly = { git = "https://github.com/arkworks-rs/algebra" }

@@ -77,8 +77,9 @@ checksum = "080e9890a082662b09c1ad45f567faeeb47f22b5fb23895fbe1e651e718e25ca"
 [[package]]
 name = "ark-crypto-primitives"
 version = "0.4.0"
-source = "git+https://github.com/intx4/crypto-primitives#c4cd0af2bcd0f16e880d94e783ca98cf165813c2"
+source = "git+https://github.com/arkworks-rs/crypto-primitives#fc1c9491c62ce51edf4f0b4e2ab270b85d0150ab"
 dependencies = [
+ "ark-crypto-primitives-macros",
  "ark-ec",
  "ark-ff",
  "ark-relations",
@@ -90,6 +91,16 @@ dependencies = [
  "digest",
  "rayon",
  "sha2",
+]
+
+[[package]]
+name = "ark-crypto-primitives-macros"
+version = "0.4.0"
+source = "git+https://github.com/arkworks-rs/crypto-primitives#fc1c9491c62ce51edf4f0b4e2ab270b85d0150ab"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.31",
 ]
 
 [[package]]

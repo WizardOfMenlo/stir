@@ -164,6 +164,7 @@ mod tests {
     use super::*;
     use crate::{crypto::fields::Field64 as TestField, domain::Domain};
     use ark_poly::domain::EvaluationDomain;
+    use ark_ff::AdditiveGroup;
 
     #[test]
     fn test_ans_polynomial() {
