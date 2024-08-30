@@ -107,7 +107,7 @@ fn main() {
             let result = verifier.verify(&commitment, &proof);
             assert!(result);
         }
-        dbg!(stir_verifier_time.elapsed());
+        dbg!(stir_verifier_time.elapsed() / reps as u32);
         let verifier_hashes = HashCounter::get() / reps;
         dbg!(verifier_hashes);
         HashCounter::reset();
@@ -152,7 +152,7 @@ fn main() {
             let res = verifier.verify(&commitment, &proof);
             assert!(res);
         }
-        dbg!(fri_verifier_time.elapsed());
+        dbg!(fri_verifier_time.elapsed() / reps as u32);
         let verifier_hashes = HashCounter::get() / reps;
         dbg!(verifier_hashes);
         HashCounter::reset();

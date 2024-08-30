@@ -125,14 +125,11 @@ fn main() {
         for (commitment, proof) in proofs {
             verifier.verify(&commitment, &proof);
         }
-        let stir_verifier_time = stir_verifier_time.elapsed();
+        let stir_verifier_time = stir_verifier_time.elapsed() / reps as u32;
         let stir_verifier_hashes = HashCounter::get() / reps;
         HashCounter::reset();
         println!("STIR verifier time: {:?}", stir_verifier_time);
-        println!(
-            "STIR verifier hashes: {:?}",
-            stir_verifier_hashes
-        );
+        println!("STIR verifier hashes: {:?}", stir_verifier_hashes);
         (stir_verifier_time, stir_verifier_hashes)
     };
 
@@ -178,7 +175,7 @@ fn main() {
         for (commitment, proof) in proofs {
             verifier.verify(&commitment, &proof);
         }
-        let fri_verifier_time = fri_verifier_time.elapsed();
+        let fri_verifier_time = fri_verifier_time.elapsed() / reps as u32;
         let fri_verifier_hashes = HashCounter::get() / reps;
         println!("FRI verifier time: {:?}", fri_verifier_time);
         println!("FRI verifier hashes: {:?}", fri_verifier_hashes);
