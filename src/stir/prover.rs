@@ -270,19 +270,18 @@ where
             })
             .collect();
 
-        let mut randomness_answers = stir_randomness
-            .iter()
-            .map(|x| (*x, g_poly.evaluate(x)))
-            .collect::<Vec<_>>();
 
-        let mut beta_answers = betas
+        let beta_answers = betas
             .iter()
             .zip(ood_randomness.iter())
             .map(|(y, x)| (*x, *y))
             .collect::<Vec<_>>();
 
-        beta_answers.append(&mut randomness_answers);
-        let quotient_answers = beta_answers;
+        let quotient_answers = stir_randomness
+            .iter()
+            .map(|x| (*x, g_poly.evaluate(x)))
+            .chain(beta_answers.into_iter())
+            .collect::<Vec<_>>();
 
         // Then compute the set we are quotienting by
         let quotient_set: Vec<_> = ood_randomness
