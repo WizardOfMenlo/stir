@@ -221,7 +221,7 @@ where
 
         // Out of domain sample
         let ood_randomness = sponge.squeeze_field_elements(self.parameters.ood_samples);
-        let betas:Vec<F> = ood_randomness
+        let betas: Vec<F> = ood_randomness
             .iter()
             .map(|alpha| g_poly.evaluate(alpha))
             .collect();
@@ -270,12 +270,16 @@ where
             })
             .collect();
 
-        let mut randomness_answers = stir_randomness.iter().map(|x| (*x, g_poly.evaluate(x)))
+        let mut randomness_answers = stir_randomness
+            .iter()
+            .map(|x| (*x, g_poly.evaluate(x)))
             .collect::<Vec<_>>();
 
-        let mut beta_answers = betas.iter().zip(ood_randomness.iter()).map(|(y,x)|{
-            (*x,*y)
-        }).collect::<Vec<_>>();
+        let mut beta_answers = betas
+            .iter()
+            .zip(ood_randomness.iter())
+            .map(|(y, x)| (*x, *y))
+            .collect::<Vec<_>>();
 
         beta_answers.append(&mut randomness_answers);
         let quotient_answers = beta_answers;
@@ -300,7 +304,6 @@ where
         // Resue the ans_polynomial to compute the quotient_polynomial
         let numerator = &g_poly + &ans_polynomial;
         let quotient_polynomial = &numerator / &vanishing_poly;
-
 
         // This is the polynomial 1 + r * x + r^2 * x^2 + ... + r^n * x^n where n = |quotient_set|
         let scaling_polynomial = DensePolynomial::from_coefficients_vec(
