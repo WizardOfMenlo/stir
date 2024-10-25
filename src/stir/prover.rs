@@ -8,7 +8,7 @@ use derivative::Derivative;
 
 use crate::{
     ldt::Prover,
-    poly_utils,
+    poly_utils::{self},
     stir::{common::*, parameters::FullParameters},
     utils,
 };
@@ -221,7 +221,7 @@ where
 
         // Out of domain sample
         let ood_randomness = sponge.squeeze_field_elements(self.parameters.ood_samples);
-        let betas = ood_randomness
+        let betas: Vec<F> = ood_randomness
             .iter()
             .map(|alpha| g_poly.evaluate(alpha))
             .collect();
@@ -270,17 +270,24 @@ where
             })
             .collect();
 
+
+        let beta_answers = betas
+            .iter()
+            .zip(ood_randomness.iter())
+            .map(|(y, x)| (*x, *y))
+            .collect::<Vec<_>>();
+
+        let quotient_answers = stir_randomness
+            .iter()
+            .map(|x| (*x, g_poly.evaluate(x)))
+            .chain(beta_answers.into_iter())
+            .collect::<Vec<_>>();
+
         // Then compute the set we are quotienting by
         let quotient_set: Vec<_> = ood_randomness
             .into_iter()
             .chain(stir_randomness.iter().cloned())
             .collect();
-
-        // TODO: We can probably reuse this in quotient
-        let quotient_answers = quotient_set
-            .iter()
-            .map(|x| (*x, g_poly.evaluate(x)))
-            .collect::<Vec<_>>();
 
         let ans_polynomial = poly_utils::interpolation::naive_interpolation(&quotient_answers);
 
@@ -291,8 +298,11 @@ where
             shake_polynomial = shake_polynomial + (&num_polynomial / &den_polynomial);
         }
 
-        // The quotient polynomial is then computed
-        let quotient_polynomial = poly_utils::quotient::poly_quotient(&g_poly, &quotient_set);
+        // The quotient_polynomial is then computed
+        let vanishing_poly = poly_utils::interpolation::vanishing_poly(&quotient_set);
+        // Resue the ans_polynomial to compute the quotient_polynomial
+        let numerator = &g_poly + &ans_polynomial;
+        let quotient_polynomial = &numerator / &vanishing_poly;
 
         // This is the polynomial 1 + r * x + r^2 * x^2 + ... + r^n * x^n where n = |quotient_set|
         let scaling_polynomial = DensePolynomial::from_coefficients_vec(
