@@ -5,6 +5,8 @@ use ark_crypto_primitives::{
 use ark_ff::{batch_inversion, FftField, PrimeField};
 use ark_poly::{univariate::DensePolynomial, EvaluationDomain, Polynomial, Radix2EvaluationDomain};
 
+use itertools::izip;
+
 use crate::{domain::Domain, ldt::Verifier, parameters::Parameters, poly_utils, utils};
 
 use super::{common::*, parameters::FullParameters};
@@ -238,13 +240,9 @@ where
             .collect();
 
         // We use this to more efficiently compute query_sets
-        let scale = generator;
-        let mut temp = F::ONE;
-        let mut scales = vec![];
-        for _ in 0..self.parameters.folding_factor {
-            scales.push(temp);
-            temp *= scale;
-        }
+        let scales: Vec<F> = std::iter::successors(Some(F::ONE), |&prev| Some(prev * generator))
+            .take(self.parameters.folding_factor)
+            .collect();
 
         let query_sets: Vec<_> = coset_offsets
             .iter()
@@ -341,48 +339,20 @@ where
             .domain_offset
             .pow([self.parameters.folding_factor as u64]);
 
-        stir_randomness_indexes
-            .iter()
-            .zip(coset_offsets)
-            .zip(coset_offsets_inv)
-            .zip(query_sets)
-            .zip(common_factors_inv)
-            .zip(denominators_inv)
-            .zip(evaluations_of_ans)
-            .enumerate()
-            // Just restructure
-            .map(
-                |(
-                    i,
-                    (
-                        (
-                            (
-                                (
-                                    ((stir_randomness_index, coset_offset), coset_offset_inv),
-                                    query_set,
-                                ),
-                                common_factors_inv,
-                            ),
-                            denominators_inv,
-                        ),
-                        evaluation_of_ans,
-                    ),
-                )| {
-                    (
-                        i,
-                        stir_randomness_index,
-                        coset_offset,
-                        coset_offset_inv,
-                        query_set,
-                        common_factors_inv,
-                        denominators_inv,
-                        evaluation_of_ans,
-                    )
-                },
-            )
-            .map(
-                |(
-                    i,
+        izip!(
+            stir_randomness_indexes.iter(),
+            coset_offsets,
+            coset_offsets_inv,
+            query_sets,
+            common_factors_inv,
+            denominators_inv,
+            evaluations_of_ans
+        )
+        .enumerate()
+        .map(
+            |(
+                i,
+                (
                     stir_randomness_index,
                     coset_offset,
                     coset_offset_inv,
@@ -390,43 +360,44 @@ where
                     common_factors_inv,
                     denominators_inv,
                     evaluation_of_ans,
-                )| {
-                    // This is the point that we are querying at
-                    let stir_randomness = scaled_offset
-                        * verification_state
-                            .domain_gen
-                            .pow([(self.parameters.folding_factor * stir_randomness_index) as u64]);
+                ),
+            )| {
+                // This is the point that we are querying at
+                let stir_randomness = scaled_offset
+                    * verification_state
+                        .domain_gen
+                        .pow([(self.parameters.folding_factor * stir_randomness_index) as u64]);
 
-                    let f_answers: Vec<_> = query_set
-                        .into_iter()
-                        .enumerate()
-                        .map(|(j, x)| {
-                            verification_state.query(
-                                x,
-                                oracle_answers[i][j],
-                                common_factors_inv[j],
-                                denominators_inv[j],
-                                evaluation_of_ans[j],
-                            )
-                        })
-                        .collect();
+                let f_answers: Vec<_> = query_set
+                    .into_iter()
+                    .enumerate()
+                    .map(|(j, x)| {
+                        verification_state.query(
+                            x,
+                            oracle_answers[i][j],
+                            common_factors_inv[j],
+                            denominators_inv[j],
+                            evaluation_of_ans[j],
+                        )
+                    })
+                    .collect();
 
-                    // This is the folding
-                    let folded_answer = poly_utils::interpolation::fft_interpolate(
-                        generator,
-                        coset_offset,
-                        generator_inv,
-                        coset_offset_inv,
-                        size_inv,
-                        &f_answers,
-                    )
-                    .evaluate(&verification_state.folding_randomness);
+                // This is the folding
+                let folded_answer = poly_utils::interpolation::fft_interpolate(
+                    generator,
+                    coset_offset,
+                    generator_inv,
+                    coset_offset_inv,
+                    size_inv,
+                    &f_answers,
+                )
+                .evaluate(&verification_state.folding_randomness);
 
-                    // Return the folded answer
-                    (stir_randomness, folded_answer)
-                },
-            )
-            .collect()
+                // Return the folded answer
+                (stir_randomness, folded_answer)
+            },
+        )
+        .collect()
     }
 
     fn round(
